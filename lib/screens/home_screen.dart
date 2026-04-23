@@ -1,52 +1,69 @@
-import 'package:firebase_connection_in_counterapp/counter_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_connection_in_counterapp/score.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class LiveScoreListScreen extends StatefulWidget {
+  const LiveScoreListScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<LiveScoreListScreen> createState() => _LiveScoreListScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  CounterController counterController = CounterController();
+class _LiveScoreListScreenState extends State<LiveScoreListScreen> {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  List<FootballSCore> _footballScoreList = [];
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLiveScorelist();
+  }
+
+  Future<void> _getLiveScorelist() async {
+    isLoading = true;
+    setState(() {});
+    _footballScoreList.clear();
+    QuerySnapshot<Map<String, dynamic>> snapshot = await db
+        .collection('Football')
+        .get();
+    for (QueryDocumentSnapshot<Map<String, dynamic>> s in snapshot.docs) {
+      _footballScoreList.add(FootballSCore.fromJson(s.data()));
+    }
+    isLoading = false;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: GetBuilder<CounterController>(
-          init: counterController,
-          builder: (controller) {
-            return Text(
-              controller.count.toString(),
-              style: const TextStyle(fontSize: 50),
+      body: Visibility(
+        visible: !isLoading,
+        replacement: const Center(child: CircularProgressIndicator()),
+        child: ListView.builder(
+          itemCount: _footballScoreList.length,
+          itemBuilder: (context, index) {
+            final score = _footballScoreList[index];
+            return ListTile(
+              title: Text("${score.team1} vs ${score.team2}"),
+              subtitle: Text(
+                score.winnner_team.isNotEmpty
+                    ? "Winner: ${score.winnner_team}"
+                    : "Ongoing",
+              ),
+              trailing: Text(
+                "${score.team1_score}-${score.team2_score}",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              leading: CircleAvatar(
+                backgroundColor: score.is_running ? Colors.green : Colors.red,
+                radius: 10,
+              ),
             );
           },
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              counterController.increment();
-            },
-            child: const Icon(Icons.add),
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            onPressed: () {
-              counterController.decrement();
-            },
-            child: const Icon(Icons.remove),
-          ),
-        ],
-      ),
     );
   }
 }
-
-//jbndfsjnsbkjldfgbkldfjgkljdfkljkl
