@@ -3,7 +3,7 @@ class FootballSCore {
   final String team2;
   final int team1_score;
   final int team2_score;
-  final String winnner_team;
+  final String winner_team;
   final bool is_running;
 
   FootballSCore({
@@ -11,7 +11,7 @@ class FootballSCore {
     required this.team2,
     required this.team1_score,
     required this.team2_score,
-    required this.winnner_team,
+    required this.winner_team,
     required this.is_running,
   });
 
@@ -21,7 +21,7 @@ class FootballSCore {
       team2: json['team2'] ?? '',
       team1_score: json['team1_score'] ?? 0,
       team2_score: json['team2_score'] ?? 0,
-      winnner_team: json['winnner_team'] ?? '',
+      winner_team: json['winner_team'] ?? '',
       is_running: json['is_running'] ?? false,
     );
   }
@@ -32,7 +32,7 @@ class FootballSCore {
       'team2': team2,
       'team1_score': team1_score,
       'team2_score': team2_score,
-      'winnner_team': winnner_team,
+      'winner_team': winner_team,
       'is_running': is_running,
     };
   }

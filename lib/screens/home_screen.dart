@@ -10,9 +10,12 @@ class LiveScoreListScreen extends StatefulWidget {
 }
 
 class _LiveScoreListScreenState extends State<LiveScoreListScreen> {
+
+  //Api call   and data read from firebase firestore database............................................................................................
+
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  List<FootballSCore> _footballScoreList = [];
+  List<FootballSCore> _footballScoreList = [];        //FootballScore name e ekta class ase score.dart file e for data fetching from database
   bool isLoading = false;
 
   @override
@@ -35,6 +38,8 @@ class _LiveScoreListScreenState extends State<LiveScoreListScreen> {
     setState(() {});
   }
 
+  //...............................................................................................................................................................
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,20 +49,34 @@ class _LiveScoreListScreenState extends State<LiveScoreListScreen> {
         child: ListView.builder(
           itemCount: _footballScoreList.length,
           itemBuilder: (context, index) {
-            final score = _footballScoreList[index];
+            FootballSCore score = _footballScoreList[index];
             return ListTile(
               title: Text("${score.team1} vs ${score.team2}"),
-              subtitle: Text(
-                score.winnner_team.isNotEmpty
-                    ? "Winner: ${score.winnner_team}"
-                    : "Ongoing",
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (score.is_running == false)
+                    Text(
+                      "Match Ended, Winner: ${score.winner_team.isNotEmpty ? score.winner_team : (score.team1_score > score.team2_score
+                                ? score.team1
+                                : score.team2_score > score.team1_score
+                                ? score.team2
+                                : 'Draw')}",
+                      style: TextStyle(color: Colors.amber),
+                    ),
+                  if (score.is_running == true)
+                    Text(
+                      "Match is Running",
+                      style: TextStyle(color: Colors.green),
+                    ),
+                ],
               ),
               trailing: Text(
                 "${score.team1_score}-${score.team2_score}",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               leading: CircleAvatar(
-                backgroundColor: score.is_running ? Colors.green : Colors.red,
+                backgroundColor: score.is_running ? Colors.green : Colors.grey,
                 radius: 10,
               ),
             );
