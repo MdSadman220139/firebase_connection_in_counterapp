@@ -1,8 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class FcmMessageService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   Future<void> initialize() async {
     await _firebaseMessaging.requestPermission(
       alert: true,
@@ -20,15 +20,31 @@ class FcmMessageService {
   }
 
   void _onForgroundNotificationRecieved(RemoteMessage message) {
-    print("message");
+    print(message);
+    print(message.notification?.title);
+    print(message.notification?.body);
+    print(message.data);
   }
 
-  void _onBackgroundNotificationRecieved(RemoteMessage message) {
-    print("message");
-  }
-}
+ 
 
-Future<void> onBackgroundNotificationMessage(RemoteMessage message) async {
-  // Handle background notification
-  print("message");
+  static Future<void> onBackgroundNotificationMessage(
+    RemoteMessage message,
+  ) async {
+    // Handle background notification
+    print('Background message received: $message');
+    print(message.notification?.title);
+    print(message.notification?.body);
+    print(message.data);
+  }
+
+
+   Future<String?> getFcmToken() async {
+    return await _firebaseMessaging.getToken();
+  }
+  void onTokenRefreashed() {
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      //api send refreashed token to server
+    });
+  }
 }
