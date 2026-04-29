@@ -14,7 +14,8 @@ class _LiveScoreListScreenState extends State<LiveScoreListScreen> {
 
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  List<FootballSCore> _footballScoreList =  []; //FootballScore name e ekta class ase score.dart file e for data fetching from database
+  List<FootballSCore> _footballScoreList =
+      []; //FootballScore name e ekta class ase score.dart file e for data fetching from database
   //bool isLoading = false;
 
   // @override
@@ -144,16 +145,33 @@ class _LiveScoreListScreenState extends State<LiveScoreListScreen> {
           return const SizedBox();
         },
       ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _addMatchScore();
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
-  void _prepareScoreList( QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+  void _addMatchScore() {
+    FootballSCore score = FootballSCore(
+      team1: "Bangladesh",
+      team2: "NewZiland",
+      team1_score: 1,
+      team2_score: 0,
+      is_running: true,
+      winner_team: "",
+    );
+
+    db.collection('Football').add(score.toJson());
+  }
+
+  void _prepareScoreList(QuerySnapshot<Map<String, dynamic>> querySnapshot) {
     _footballScoreList.clear();
-     for (QueryDocumentSnapshot<Map<String, dynamic>> s
-                in querySnapshot.docs) {
-              _footballScoreList.add(FootballSCore.fromJson(s.data()));
-            }
-
-
+    for (QueryDocumentSnapshot<Map<String, dynamic>> s in querySnapshot.docs) {
+      _footballScoreList.add(FootballSCore.fromJson(s.data()));
+    }
   }
 }
